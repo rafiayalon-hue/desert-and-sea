@@ -1,0 +1,23 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Heebo", sans-serif;
+  background: #f5f5f5;
+  direction: rtl;
+}
+
+/* Ant Design RTL overrides */
+.ant-layout-sider {
+  right: 0;
+}
+
+.ant-table {
+  direction: rtl;
+}
+
+.ant-tag {
+  direction: rtl;
+}
