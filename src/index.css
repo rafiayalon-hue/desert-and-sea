@@ -339,3 +339,171 @@ body {
   .table-header, .table-row { grid-template-columns: 60px 1fr 85px 85px 75px; }
   .table-header > *:nth-child(n+6), .table-row > *:nth-child(n+6) { display: none; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE
+   ══════════════════════════════════════════════════════════ */
+
+/* Bottom nav bar - mobile only */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--bg-sidebar);
+  border-top: 1px solid rgba(212,149,106,.2);
+  z-index: 200;
+  padding: 0;
+  safe-area-inset-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav-items {
+  display: flex;
+  align-items: stretch;
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px calc(10px + env(safe-area-inset-bottom));
+  gap: 3px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: rgba(232,201,160,.45);
+  font-family: 'Heebo', sans-serif;
+  font-size: .65rem;
+  font-weight: 500;
+  transition: all .15s;
+}
+
+.bottom-nav-item .nav-icon { font-size: 1.2rem; }
+.bottom-nav-item.active { color: var(--terra-light); }
+.bottom-nav-item:active { transform: scale(.92); }
+
+/* Mobile top header */
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 54px;
+  background: var(--bg-sidebar);
+  border-bottom: 1px solid rgba(212,149,106,.15);
+  z-index: 150;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.mobile-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.mobile-header-logo-circle {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(150deg, var(--terra) 35%, var(--teal) 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.mobile-header-title {
+  font-family: 'Secular One', sans-serif;
+  font-size: .9rem;
+  color: var(--sand);
+}
+
+.mobile-header-date {
+  font-size: .7rem;
+  color: rgba(232,201,160,.45);
+}
+
+@media (max-width: 768px) {
+  /* Show mobile elements */
+  .bottom-nav    { display: block; }
+  .mobile-header { display: flex; }
+
+  /* Hide desktop sidebar */
+  .sidebar { display: none; }
+
+  /* Adjust main content */
+  .main-content {
+    margin-right: 0;
+    padding: 70px 14px 80px;
+  }
+
+  /* Page header */
+  .page-header { margin-bottom: 14px; }
+  .page-title  { font-size: 1.2rem; }
+
+  /* Stats - 2 columns on mobile */
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 9px; }
+  .stat-value { font-size: 1.6rem; }
+
+  /* Rooms - stack on mobile */
+  .rooms-grid { grid-template-columns: 1fr; gap: 9px; }
+
+  /* Detail grid - single column */
+  .detail-grid { grid-template-columns: 1fr; }
+
+  /* Occupancy cards - single column */
+  .occupancy-grid { grid-template-columns: 1fr !important; }
+
+  /* Filters bar - wrap */
+  .filters-bar { gap: 7px; }
+  .filter-btn  { font-size: .74rem; padding: 6px 10px; }
+  .search-input { min-width: 100%; }
+
+  /* Table - simplified on mobile */
+  .table-header {
+    display: none;
+  }
+
+  .table-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin: 6px 0;
+    border: 1px solid var(--border-card);
+    background: var(--bg-card);
+  }
+
+  .table-row-name   { font-weight: 700; font-size: .9rem; }
+  .table-row-meta   { font-size: .78rem; color: var(--text-muted); display: flex; gap: 8px; flex-wrap: wrap; }
+  .table-row-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+
+  .bookings-table {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  /* Code display smaller */
+  .code-display { font-size: 1.8rem; }
+
+  /* Today items */
+  .today-item { padding: 9px 11px; }
+  .today-name { font-size: .82rem; }
+
+  /* Buttons */
+  .btn { padding: 8px 13px; font-size: .82rem; }
+  .btn-sm { padding: 5px 9px; font-size: .73rem; }
+
+  /* Cards padding */
+  .card { padding: 14px; }
+  .detail-section { padding: 14px; margin-bottom: 10px; }
+
+  /* stat card */
+  .stat-card { padding: 13px 14px; }
+  .stat-icon { font-size: 1.3rem; }
+}
+
+@media (max-width: 380px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 7px; }
+  .stat-value  { font-size: 1.4rem; }
+  .main-content { padding: 64px 10px 75px; }
+}
