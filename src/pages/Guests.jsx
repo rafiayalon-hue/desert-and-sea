@@ -16,9 +16,18 @@ function formatPrice(p) {
 }
 
 // ===== כרטיס אורח מפורט =====
-function GuestCard({ guest, onClose, onSaveNote }) {
-  const [note, setNote]     = useState(guest.notes || "");
-  const [editing, setEditing] = useState(false);
+function GuestCard({ guest, onClose, onSaveNote, onSaveContact }) {
+  const [note,        setNote]        = useState(guest.notes || "");
+  const [editingNote, setEditingNote] = useState(false);
+  const [editingContact, setEditingContact] = useState(false);
+  const [editName,    setEditName]    = useState(guest.display_name || "");
+  const [editPhone,   setEditPhone]   = useState(guest.phone || "");
+  const [editEmail,   setEditEmail]   = useState(guest.email || "");
+
+  function saveContact() {
+    onSaveContact(guest.key, { display_name: editName, phone: editPhone, email: editEmail });
+    setEditingContact(false);
+  }
 
   return (
     <div style={{
@@ -35,7 +44,7 @@ function GuestCard({ guest, onClose, onSaveNote }) {
         <div style={{ background: "var(--terra)", borderRadius: "16px 16px 0 0", padding: "18px 20px", color: "#fff" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <div style={{ fontSize: "1.2rem", fontWeight: 700 }}>{guest.display_name}</div>
+              <div style={{ fontSize: "1.2rem", fontWeight: 700 }}>{editName || guest.display_name}</div>
               {guest.is_returning && (
                 <span style={{ fontSize: ".72rem", background: "rgba(255,255,255,0.25)", padding: "2px 8px", borderRadius: 20, marginTop: 4, display: "inline-block" }}>
                   ⭐ אורח חוזר
@@ -68,28 +77,54 @@ function GuestCard({ guest, onClose, onSaveNote }) {
 
           {/* פרטי קשר */}
           <div className="detail-section">
-            <div className="detail-section-title">פרטי קשר</div>
-            {[
-              { label: "טלפון", value: guest.phone, href: guest.phone ? `tel:${guest.phone}` : null },
-              { label: "מייל",  value: guest.email,  href: guest.email  ? `mailto:${guest.email}` : null },
-              { label: "מדינה", value: guest.country || "—" },
-            ].map(r => (
-              <div key={r.label} className="detail-row">
-                <span className="detail-label">{r.label}</span>
-                <span className="detail-value">
-                  {r.href
-                    ? <a href={r.href} style={{ color: "var(--terra)", textDecoration: "none" }}>{r.value}</a>
-                    : (r.value || "—")}
-                </span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <div className="detail-section-title" style={{ marginBottom: 0, paddingBottom: 0, border: "none" }}>פרטי קשר</div>
+              <button className="btn btn-secondary btn-sm" onClick={() => setEditingContact(!editingContact)}>
+                {editingContact ? "ביטול" : "✏️ עריכה"}
+              </button>
+            </div>
+
+            {editingContact ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <div>
+                  <div style={{ fontSize: ".75rem", color: "var(--text-muted)", marginBottom: 4 }}>שם</div>
+                  <input className="input" value={editName} onChange={e => setEditName(e.target.value)} placeholder="שם מלא" />
+                </div>
+                <div>
+                  <div style={{ fontSize: ".75rem", color: "var(--text-muted)", marginBottom: 4 }}>טלפון</div>
+                  <input className="input" value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="מספר טלפון" style={{ direction: "ltr" }} />
+                </div>
+                <div>
+                  <div style={{ fontSize: ".75rem", color: "var(--text-muted)", marginBottom: 4 }}>מייל</div>
+                  <input className="input" value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="כתובת מייל" style={{ direction: "ltr" }} />
+                </div>
+                <button className="btn btn-primary btn-sm" style={{ alignSelf: "flex-start" }} onClick={saveContact}>שמור</button>
               </div>
-            ))}
-            {guest.aliases?.length > 0 && (
-              <div className="detail-row">
-                <span className="detail-label">שמות נוספים</span>
-                <span className="detail-value" style={{ fontSize: ".78rem", color: "var(--text-muted)" }}>
-                  {guest.aliases.join(" · ")}
-                </span>
-              </div>
+            ) : (
+              <>
+                {[
+                  { label: "טלפון", value: editPhone || guest.phone, href: (editPhone || guest.phone) ? `tel:${editPhone || guest.phone}` : null },
+                  { label: "מייל",  value: editEmail || guest.email,  href: (editEmail || guest.email)  ? `mailto:${editEmail || guest.email}` : null },
+                  { label: "מדינה", value: guest.country || "—" },
+                ].map(r => (
+                  <div key={r.label} className="detail-row">
+                    <span className="detail-label">{r.label}</span>
+                    <span className="detail-value">
+                      {r.href
+                        ? <a href={r.href} style={{ color: "var(--terra)", textDecoration: "none" }}>{r.value}</a>
+                        : (r.value || "—")}
+                    </span>
+                  </div>
+                ))}
+                {guest.aliases?.length > 0 && (
+                  <div className="detail-row">
+                    <span className="detail-label">שמות נוספים</span>
+                    <span className="detail-value" style={{ fontSize: ".78rem", color: "var(--text-muted)" }}>
+                      {guest.aliases.join(" · ")}
+                    </span>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
@@ -97,16 +132,16 @@ function GuestCard({ guest, onClose, onSaveNote }) {
           <div className="detail-section">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
               <div className="detail-section-title" style={{ marginBottom: 0, paddingBottom: 0, border: "none" }}>📝 הערות והעדפות</div>
-              <button className="btn btn-secondary btn-sm" onClick={() => setEditing(!editing)}>
-                {editing ? "ביטול" : "✏️ עריכה"}
+              <button className="btn btn-secondary btn-sm" onClick={() => setEditingNote(!editingNote)}>
+                {editingNote ? "ביטול" : "✏️ עריכה"}
               </button>
             </div>
-            {editing ? (
+            {editingNote ? (
               <>
                 <textarea className="textarea" value={note} onChange={e => setNote(e.target.value)}
                   placeholder="העדפות, הנחות, הערות אישיות..." rows={3} />
                 <button className="btn btn-primary btn-sm" style={{ marginTop: 8 }}
-                  onClick={() => { onSaveNote(guest.key, note); setEditing(false); }}>
+                  onClick={() => { onSaveNote(guest.key, note); setEditingNote(false); }}>
                   שמור
                 </button>
               </>
@@ -193,6 +228,7 @@ export default function Guests() {
   const [filter,      setFilter]      = useState("all");
   const [selectedKey, setSelectedKey] = useState(null);
   const [notes,       setNotes]       = useState({});
+  const [contacts,    setContacts]    = useState({});
 
   const filtered = guests.filter(g => {
     const q = search.toLowerCase();
@@ -210,11 +246,19 @@ export default function Guests() {
   });
 
   const selectedGuest = selectedKey
-    ? { ...guests.find(g => g.key === selectedKey), notes: notes[selectedKey] || guests.find(g => g.key === selectedKey)?.notes || "" }
+    ? {
+        ...guests.find(g => g.key === selectedKey),
+        notes: notes[selectedKey] || guests.find(g => g.key === selectedKey)?.notes || "",
+        ...contacts[selectedKey],
+      }
     : null;
 
   function saveNote(key, note) {
     setNotes(prev => ({ ...prev, [key]: note }));
+  }
+
+  function saveContact(key, data) {
+    setContacts(prev => ({ ...prev, [key]: data }));
   }
 
   const stats = {
@@ -285,6 +329,7 @@ export default function Guests() {
           guest={selectedGuest}
           onClose={() => setSelectedKey(null)}
           onSaveNote={saveNote}
+          onSaveContact={saveContact}
         />
       )}
     </div>
