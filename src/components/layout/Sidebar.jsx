@@ -2,6 +2,7 @@ export default function Sidebar({ currentPage, navigate }) {
   const items = [
     { id: "dashboard", label: "לוח בקרה", icon: "🏠" },
     { id: "bookings",  label: "הזמנות",   icon: "📋" },
+    { id: "guests",    label: "אורחים",   icon: "👥" },
     { id: "settings",  label: "הגדרות",   icon: "⚙️" },
   ];
 
