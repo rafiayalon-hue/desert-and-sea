@@ -4,12 +4,14 @@ import Dashboard from "./pages/Dashboard";
 import BookingsList from "./pages/BookingsList";
 import BookingDetail from "./pages/BookingDetail";
 import Settings from "./pages/Settings";
+import Guests from "./pages/Guests";
 
 function MobileHeader({ currentPage }) {
   const titles = {
     dashboard: "לוח בקרה",
     bookings:  "הזמנות",
     booking:   "פרטי הזמנה",
+    guests:    "אורחים",
     settings:  "הגדרות",
   };
   return (
@@ -35,6 +37,7 @@ function BottomNav({ currentPage, navigate }) {
   const items = [
     { id: "dashboard", label: "בקרה",   icon: "🏠" },
     { id: "bookings",  label: "הזמנות", icon: "📋" },
+    { id: "guests",    label: "אורחים",  icon: "👥" },
     { id: "settings",  label: "הגדרות", icon: "⚙️" },
   ];
   return (
@@ -74,6 +77,7 @@ export default function App() {
       case "dashboard": return <Dashboard navigate={navigate} />;
       case "bookings":  return <BookingsList navigate={navigate} />;
       case "booking":   return <BookingDetail bookingId={selectedBookingId} navigate={navigate} />;
+      case "guests":    return <Guests navigate={navigate} />;
       case "settings":  return <Settings />;
       default:          return <Dashboard navigate={navigate} />;
     }
