@@ -1,7 +1,7 @@
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, extract
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
@@ -38,9 +38,52 @@ async def sync_bookings(
 
 
 @router.get("/stats/occupancy")
-async def occupancy_stats(month: str):
-    """Get occupancy stats for a month (YYYY-MM)."""
-    return await minihotel_client.get_occupancy_stats(month)
+async def occupancy_stats(month: str, db: AsyncSession = Depends(get_db)):
+    """Get occupancy stats for a month (YYYY-MM format), calculated locally."""
+    import calendar
+    
+    year, mon = int(month.split("-")[0]), int(month.split("-")[1])
+    days_in_month = calendar.monthrange(year, mon)[1]
+    
+    query = select(Booking).where(
+        extract("year", Booking.check_in) == year,
+        extract("month", Booking.check_in) == mon,
+        Booking.status == "confirmed"
+    )
+    result = await db.scalars(query)
+    bookings = result.all()
+    
+    desert_nights = 0
+    sea_nights = 0
+    
+    for b in bookings:
+        nights = (b.check_out - b.check_in).days
+        room = (b.room_name or "").strip()
+        
+        if room == "des_sea":
+            desert_nights += nights
+            sea_nights += nights
+        elif room == "sesert":
+            desert_nights += nights
+        elif room == "sea":
+            sea_nights += nights
+    
+    return {
+        "month": month,
+        "days_in_month": days_in_month,
+        "desert": {
+            "nights_booked": desert_nights,
+            "occupancy_pct": round(desert_nights / days_in_month * 100, 1)
+        },
+        "sea": {
+            "nights_booked": sea_nights,
+            "occupancy_pct": round(sea_nights / days_in_month * 100, 1)
+        },
+        "combined": {
+            "nights_booked": desert_nights + sea_nights,
+            "occupancy_pct": round((desert_nights + sea_nights) / (days_in_month * 2) * 100, 1)
+        }
+    }
 
 
 @router.get("/{booking_id}")

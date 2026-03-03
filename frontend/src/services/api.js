@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const api = axios.create({ baseURL: "/api" });
+const api = axios.create({ baseURL: "https://selfless-happiness-production.up.railway.app/api" });
 
 // Bookings
 export const getBookings = (params) => api.get("/bookings/", { params });

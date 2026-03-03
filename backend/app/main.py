@@ -1,24 +1,30 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.routes import bookings, guests, locks, messages, settings
 
-from app.api.routes import bookings, guests, locks, messages
-
-app = FastAPI(title="Desert and Sea", version="0.1.0")
+app = FastAPI(
+    title="Desert and Sea — דשבורד ניהול צימרים",
+    version="1.0.0"
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://desert-and-sea.vercel.app",
+        "https://*.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(bookings.router, prefix="/api/bookings", tags=["הזמנות"])
-app.include_router(guests.router, prefix="/api/guests", tags=["אורחים"])
-app.include_router(locks.router, prefix="/api/locks", tags=["מנעולים"])
-app.include_router(messages.router, prefix="/api/messages", tags=["הודעות"])
+app.include_router(bookings.router, prefix="/api/bookings", tags=["bookings"])
+app.include_router(guests.router,   prefix="/api/guests",   tags=["guests"])
+app.include_router(locks.router,    prefix="/api/locks",    tags=["locks"])
+app.include_router(messages.router, prefix="/api/messages", tags=["messages"])
+app.include_router(settings.router, prefix="/api/settings", tags=["settings"])
 
-
-@app.get("/health")
+@app.get("/api/health")
 async def health():
-    return {"status": "ok"}
+    return {"status": "ok", "service": "Desert and Sea"}
